@@ -4,8 +4,8 @@ import subprocess
 import re
 
 CMD_INTERFACES      = "iw dev | grep Interface"
-CMD_START_INTERFACE = "ip link set {0} up"
-CMD_CONNECT_WEP     = "iw dev {0} connect {1} key 0:{2}"
+CMD_START_INTERFACE = "sudo ip link set {0} up"
+CMD_CONNECT_WEP     = "sudo iw dev {0} connect {1} key 0:{2}"
 CMD_SCAN_NETWORKS   = "sudo iw dev {0} scan | grep SSID:"
 RE_INTERFACES       = "Interface\s+(\w+)"
 RE_SSID             = "SSID:\s+(\w+)"
@@ -26,7 +26,6 @@ def getNetworks(interface=None):
     if interface == None:
         interface=getInterface()
     cmd = getScanCmd(interface)
-    print cmd
     networks = subprocess.check_output([cmd],shell=True)
     networks = re.findall(RE_SSID,networks)
     return networks
@@ -36,7 +35,7 @@ def connect(network,password,interface=None,networkType=None):
         networkType = "wep"
     if interface == None:
         interface=getInterface()
-    return getConnectCmd(network,password,interface)
+    cmd = getConnectCmd(network,password,interface)
 
 def getStartInterfaceCmd(interface):
     return CMD_START_INTERFACE.format(interface)
@@ -48,11 +47,14 @@ def getScanCmd(interface):
     return CMD_SCAN_NETWORKS.format(interface)
 
 def main():
-    # if len(sys.argv) >= 2:
-    #     network = sys.argv[1]
-    # if len(sys.argv) >= 3:
-    #     password = sys.argv[2]
-    # print connect(network,password)
-    print getNetworks()
+    if len(sys.argv) == 1:
+        print "interfaces",getIntefaces()
+        print "Networks:",getNetworks()
+    if len(sys.argv) >= 2:
+        network = sys.argv[1]
+    if len(sys.argv) >= 3:
+        password = sys.argv[2]
+    #print connect(network,password)
+    
 if __name__ == '__main__':
     main()
