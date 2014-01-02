@@ -25,8 +25,10 @@ def getIntefaces():
 def getNetworks(interface=None):
     if interface == None:
         interface=getInterface()
-    networks = subprocess.check_output([getScanCmd(interface)])
-    networks = re.findall(RE_INTERFACES,networks)
+    cmd = getScanCmd(interface)
+    print cmd
+    networks = subprocess.check_output([cmd],shell=True)
+    networks = re.findall(RE_SSID,networks)
     return networks
 
 def connect(network,password,interface=None,networkType=None):
@@ -46,11 +48,11 @@ def getScanCmd(interface):
     return CMD_SCAN_NETWORKS.format(interface)
 
 def main():
-    if len(sys.argv) >= 2:
-        network = sys.argv[1]
-    if len(sys.argv) >= 3:
-        password = sys.argv[2]
-    print connect(network,password)
-
+    # if len(sys.argv) >= 2:
+    #     network = sys.argv[1]
+    # if len(sys.argv) >= 3:
+    #     password = sys.argv[2]
+    # print connect(network,password)
+    print getNetworks()
 if __name__ == '__main__':
     main()
